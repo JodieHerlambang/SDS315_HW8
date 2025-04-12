@@ -1,0 +1,146 @@
+---
+title: "Homework 8"
+author: "Jodie Herlambang -- joh538"
+date: "April 14, 2025"
+subtitle: "github link"
+output: 
+  pdf_document:
+    toc: true
+    number_sections: false
+    toc_depth: 3
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(mosaic)
+library(ggplot2)
+creatinine <- read.csv("creatinine.csv")
+covid <- read.csv("covid.csv")
+milk <- read.csv("milk.csv")
+```
+
+\newpage
+# Problem 1: Regression Warm Up
+
+
+```{r, echo=FALSE, eval=FALSE}
+model_creatinine = lm(creatclear ~ age, data= creatinine)
+coef(model_creatinine)
+```
+
+```{r echo=FALSE, warning=FALSE}
+ggplot(creatinine) +
+  geom_point(aes(y = creatclear, x = age)) +
+  geom_lm(aes(y = creatclear, x = age), linewidth = 1) +
+  labs(
+    x = "Age (years)",
+    y = "Creatine Clearance Rate (mL/minute)",
+    title = "Relationship between Creatine Clearance Rate and Age"
+  )
+
+
+```
+\begin{center}
+Creatine Clearance Rate (mL/minute) = 147.8 - 0.62 * Age (years) 
+\end{center}
+
+
+## A. 
+Using a linear regression model on the dataset `creatinine.csv`, we are able to compute a equation and then subsitute in the age 55 to find the corresponding creatine clearance rate. 
+
+\begin{center}
+Creatine Clearance Rate (mL/minute) = 147.8 - 0.62 * Age (years)
+
+Creatine Clearance Rate = 147.8 - 0.62 * 55 = 113.7 mL/minute 
+\end{center}
+
+For a 55 year-old, we would expect the individual to have 113.7 mL/minute creatine clearance rate. 
+
+## B.
+To determine how the creatine clearance rate changes with age, the slope of a linear regression model on the dataset `creatinine.csv` is used to represent this. 
+
+The equation produced:
+\begin{center}
+Creatine Clearance Rate (mL/minute) = 147.8 - 0.62 * Age (years) 
+\end{center}
+
+Using the slope, the creatine clearance rate decreases at a rate of 0.62 mL/minute per year. 
+
+\newpage
+## C.
+40-year-old with a rate of 135:
+\begin{center}
+Actual = 135 mL/minute
+
+Predicted = 147.8 - 0.62 * 40 = 123 mL/minute 
+
+Actual - Predicted = 135 - 123 = 12
+\end{center}
+
+
+60-year-old with a rate of 112:
+\begin{center}
+Actual = 112 mL/minute
+
+Predicted = 147.8 - 0.62 * 60 = 110.6 mL/minute 
+
+Actual - Predicted = 112 - 110.6 = 1.4 
+\end{center}
+
+The 40 year-old with a rate of 135 has a healthier creatine clearance rate for their age in comparison to the 60 year-old with a rate of 112. Using the linear regression model, a predicted creatine clearance rate for the age 40 and 60 can be produced and compared individually to their actual rates. The 40 year-old had a rate that was 12 mL/min higher than the predicted rate, whereas the 60 year-old's rate was only 1.4 mL/minute higher than the predicted rate. While both individuals have clearance rates higher than predicted for their age, the 40 year-old had a higher rate difference. 
+
+\newpage
+# Problem 2: Modeling Disease Growth
+
+```{r, echo=FALSE, eval=FALSE}
+covid_italy <- covid |>
+  filter(country == "Italy")
+
+covid_spain <- covid |>
+  filter(country == "Spain")
+
+```
+
+```{r, echo=FALSE}
+ggplot(covid) +
+  geom_line(aes(x = days_since_first_death, y = deaths, color= country)) +
+  labs(
+    x= "Days since First Death",
+    y = "Deaths (number reported on that Day)",
+    title = "Covid Deaths during February and March of 2020"
+  )
+```
+
+```{r, echo=FALSE, eval=FALSE}
+model_italy <- lm(log(deaths) ~ days_since_first_death, covid_italy)
+coef(model_italy)
+boot_italy <- do(10000)* lm(log(deaths) ~ days_since_first_death, data= resample(covid_italy))
+confint(boot_italy, level=0.95)
+```
+
+```{r, echo=FALSE, eval=FALSE}
+model_spain <- lm(log(deaths) ~ days_since_first_death, covid_spain)
+coef(model_spain)
+boot_spain <- do(10000)* lm(log(deaths) ~ days_since_first_death, data= resample(covid_spain))
+confint(boot_spain, level=0.95)
+```
+
+During the first pandemic wave in February and March of 2020, Italy had an estimated growth rate of 0.183 for daily deaths, with a 95% confidence interval of (0.158, 0.208). The doubling time in Italy is estimated 3.8 days, with a 95% confident interval of (3.4, 4.4). 
+
+During the first pandemic wave in February and March of 2020, Spain had an estimated growth rate of 0.276 for daily deaths, with a 95% confidence interval of (0.235, 0.317). The doubling time in Spain is estimated 2.5 days, with a 95% confident interval of (2.2, 3.0). 
+
+<br>
+<br>
+
+# Problem 3: Price Elasticity of Demand
+
+```{r, echo=FALSE, eval=FALSE}
+model_milk = lm(log(sales)~ log(price), data= milk)
+coef(model_milk)
+boot_milk = do(10000)* lm(log(sales)~ log(price), data= resample(milk))
+confint(boot_milk, level=0.95)
+
+```
+
+The estimated price elasticity of demand for milk is -1.62, with a 95% confidence interval of (-1.78, -1.46). To determine the elasticity of milk, the dataset milk.csv was used to produce a linear model of the log of price and the log of sales. The slope of the linear model represents the elasticity of milk, and bootstrapping was used to produce the estimate and 95% confidence interval.
